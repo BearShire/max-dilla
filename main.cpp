@@ -4,11 +4,12 @@
 #include <cstdio>
 #include <cstdlib>
 #include <conio.h>
+#include <ctime>
 
 using namespace std;
 
 string nick, nazwisko, miasto;
-int kasa, respekt, ktorydzien, iledni, cnarkotyk[6], inarkotyk[6], ile, ktory, hp;
+unsigned long kasa, respekt, ktorydzien, iledni, cnarkotyk[4], cnarkotyk1[4], inarkotyk[6], ile, ktory, hp;
 
 //kolory
 void csilver() //srebrny
@@ -48,29 +49,14 @@ void cnormal() //szary
 
 //FUNKCJE GRY
 
-void journey() //to other cities
+void savetotop()
 {
-string miastobuf;
-    while(true)
-        {
-            cout<<"Jestes w "<<miasto<<", wybierz dokand chcesz sie udac"<<endl;
-            miastobuf.insert( 0, miasto, 0, 8 );
-            //test - cout<<"bufor miasta to "<<miastobuf<<endl<<endl;
-            cin>>miasto;
-            if (miastobuf==miasto)
-                {
-                    cout<<"przeciez juz jestes w "<<miasto<<" baranie!"<<endl;
-                    Sleep(2000);
-                    miastobuf.erase( 0, 8 ); //Kasujemy od zerowej pozycji (czyli jedenastego znaku) osiem znaków
-                }
-            else
-                {
-                    ktorydzien=ktorydzien+1;
-                    kasa=kasa-5;
-                    miastobuf=="zero";
-                    break;
-                }
-        }
+    fstream plik;
+    plik.open("top5.txt", ios::app);
+    plik<<nick<<endl;
+    plik<<kasa<<endl;
+    plik<<respekt<<endl;
+    plik.close();
 }
 
 void gotoxyd(int x, int y) //go to x/y dynamic
@@ -98,6 +84,85 @@ void gotoxys(int xx, int yy) //go to x/y static
     SetConsoleCursorPosition (GetStdHandle (STD_OUTPUT_HANDLE), c);
 }
 
+void top5()
+{
+    fstream plik; //TOP5
+    plik.open("top5.txt", ios::in);
+
+    if(plik.good()==false)
+    {
+       cout<<"plik nie dziala, najlepiej stworz nowy!";
+       Sleep(2000);
+    }
+    else{
+        int i;
+            for ( i = 0; i<5; i++)
+            {
+                string a;
+                int b;
+                int c;
+                plik>>a;
+                plik>>b;
+                plik>>c;
+                Sleep(300);
+                if (a=="")
+                {
+                    a="Brak";
+                    b=0;
+                    c=0;
+                }
+                //gotoxys(31,(3+i));
+                gotoxys(25,(3+(6*i))); cout<<"----- Miejsce "<<i+1<<" ------"<<endl;
+                gotoxys(25,(4+(6*i)));cout<<"| Nick - "<<a<<endl;
+                gotoxys(25,(5+(6*i)));cout<<"| Kasa - "<<b<<endl;
+                gotoxys(25,(6+(6*i)));cout<<"| Respekt - "<<c<<endl;
+                gotoxys(25,(7+(6*i)));cout<<"----------------------"<<endl<<endl;
+
+            }
+        plik.close();
+        gotoxys(22,(2+(6*i))); system("pause");
+
+        }
+}
+
+void prices() //dziala, na razie bez wydarzen losowych typu zamkniecie laboratorium czy cos
+{
+//traw grzyb kok hash amfa
+
+cnarkotyk1[0]=(( std::rand() % 10 ) + cnarkotyk[0] );
+cnarkotyk1[1]=(( std::rand() % 8 ) + cnarkotyk[1] );
+cnarkotyk1[2]=(( std::rand() % 45 ) + cnarkotyk[2] );
+cnarkotyk1[3]=(( std::rand() % 20 ) + cnarkotyk[3] );
+cnarkotyk1[4]=(( std::rand() % 24 ) + cnarkotyk[4] );
+
+}
+
+void journey() //to other cities
+{
+string miastobuf;
+    while(true)
+        {
+            cout<<"Jestes w "<<miasto<<", wybierz dokand chcesz sie udac"<<endl;
+            miastobuf.insert( 0, miasto, 0, 8 );
+            //test - cout<<"bufor miasta to "<<miastobuf<<endl<<endl;
+            cin>>miasto;
+            if (miastobuf==miasto)
+                {
+                    cout<<"przeciez juz jestes w "<<miasto<<" baranie!"<<endl;
+                    Sleep(2000);
+                    miastobuf.erase( 0, 8 ); //Kasujemy od zerowej pozycji (czyli jedenastego znaku) osiem znaków
+                }
+            else
+                {
+                    ktorydzien=ktorydzien+1;
+                    kasa=kasa-5;
+                    miastobuf=="zero";
+                    break;
+                }
+        }
+        prices();
+}
+
 void gameover()
 {
     system("cls");
@@ -108,6 +173,7 @@ void gameover()
     gotoxys(15, 5);cout<<"| Respekt: "; cgreen(); cout<<respekt; gotoxys (62,5); cnormal(); cout<<"|"<<endl;
     gotoxys(15, 6);cout<<"| Kasa: "; cgold(); cout<<kasa; gotoxys (62,6); cnormal(); cout<<"|"<<endl;
     gotoxys(15, 7);cout<<" ----------------------------------------------"<<endl;
+    savetotop();
     system("pause");
 }
 
@@ -121,6 +187,7 @@ void yrdead()
     gotoxys(15, 5);cout<<"| Respekt: "; cgreen(); cout<<respekt; gotoxys (62,5); cnormal(); cout<<"|"<<endl;
     gotoxys(15, 6);cout<<"| Kasa: "; cgold(); cout<<kasa; gotoxys (62,6); cnormal(); cout<<"|"<<endl;
     gotoxys(15, 7);cout<<" ----------------------------------------------"<<endl;
+    savetotop();
     system("pause");
 }
 
@@ -162,14 +229,16 @@ char wybor1;
                     system("cls");
                     cout<<"Wybierz drag do kupienia "<<endl;
                     cout<<" -----------------------------------------"<<endl;
-                    cout<<"|1) Trawka - "<<cnarkotyk[0]<<" zl" <<endl;
+                    cout<<"|1) Trawka - "<<cnarkotyk1[0]<<" zl" <<endl;
                     cout<<"|2) Grzybki - "<<cnarkotyk[1]<<" zl"<<endl;
                     cout<<"|3) Kokaina - "<<cnarkotyk[2]<<" zl"<<endl;
                     cout<<"|4) Hash - "<<cnarkotyk[3]<<" zl"<<endl;
                     cout<<"|5) Amfetamina - "<<cnarkotyk[4]<<" zl"<<endl;
+                    cout<<"|6) Zaden, spadam stad!"<<endl;
                     cout<<" -----------------------------------------"<<endl;
                     cout<<endl<<"wpisz ktory narkotyk chcesz kupic  ";
                     cin>>ktory;
+                    if (ktory==6) break;
                     cout<<"wpisz ilosc do kupienia, masz "<<inarkotyk[ktory]<<" sztuk"<<endl;
                     cin>>ile;
 
@@ -188,9 +257,11 @@ char wybor1;
                     cout<<"|3) Kokaina - "<<cnarkotyk[2]<<" zl"<<endl;
                     cout<<"|4) Hash - "<<cnarkotyk[3]<<" zl"<<endl;
                     cout<<"|5) Amfetamina - "<<cnarkotyk[4]<<" zl"<<endl;
+                    cout<<"|6) Zaden, spadam stad!"<<endl;
                     cout<<" -----------------------------------------"<<endl;
                     cout<<"wpisz ktory narkotyk chcesz sprzedac  ";
                     cin>>ktory;
+                    if (ktory==6) break;
                     cout<<endl<<"Jaki towar opylasz? Masz "<<inarkotyk[ktory]<<" sztuk towaru"<<endl;
                     cout<<"Opylam ";
                     cin>>ile;
@@ -258,7 +329,7 @@ char wybor1;
                     cout<<"|4)                                       " <<endl;
                     cout<<"|5)                                       " <<endl;
                     cout<<" -----------------------------------------"<<endl;
-                    cout<<"Jeszcze zamkniete ;) ";
+                    cout<<"Jeszcze zamkniete ;) "<<endl<<endl;
                     system("pause");
 
                 } break;
@@ -275,7 +346,7 @@ char wybor1;
                     cout<<"|4)                                       " <<endl;
                     cout<<"|5)                                       " <<endl;
                     cout<<" -----------------------------------------"<<endl;
-                    cout<<"Jeszcze zamkniete ;) ";
+                    cout<<"Jeszcze zamkniete ;) "<<endl<<endl;
                     system("pause");
 
                 } break;
@@ -359,19 +430,15 @@ void newprofile()
     cout<<"--------------------------------------------"<<endl<<endl<<endl;
     system("pause");
     system("cls");
+    prices();
     game();
-}
-
-void prices() //na razie puste
-{
-
 }
 
 void load()
 {
 
 
-    fstream plikceny;
+    fstream plikceny; //CENY
     plikceny.open("ceny.txt", ios::in);
     if(plikceny.good()==false)
     {
@@ -387,7 +454,7 @@ void load()
     plikceny>>cnarkotyk[4];
     plikceny.close();
     }
-    fstream plik;
+    fstream plik; //SAVE
     plik.open("save.txt", ios::in);
 
     if(plik.good()==false)
@@ -413,6 +480,7 @@ void load()
 
     system("pause");
     system("cls");
+    prices();
     game();
     }system("cls");
 }
@@ -434,10 +502,10 @@ void intro()
 int main() // JUZ PRZEFORMATOWANA
 {
 char wybor;
-intro();
+//intro();
     while(true)
     {
-
+        srand( time( NULL ));
         cout<<"------------------------------------------------------"<<endl;
         cout<<"Witaj w MAXDILLA ver. 0.4 uposledzona by";
         cgold(); cout<<" Bearshire"<<endl; cnormal();
@@ -448,7 +516,7 @@ intro();
         cout<<"2. Kontynuj gre"<<endl;
         cout<<"3. Zasady"<<endl;
         cout<<"4. O grze"<<endl;
-        cout<<"5. TOP 10"<<endl;
+        cout<<"5. TOP 5"<<endl;
         cout<<"6. Wyjdz z gry"<<endl;
         wybor=getch();
 
@@ -506,8 +574,8 @@ intro();
             case '5':
             {
                 system("cls");
-                gotoxys(31,1); cout<<"Tutaj bedzie top 10"<<endl;
-                Sleep(2000);
+                gotoxys(31,1); cout<<" TOP 5 !"<<endl;
+                top5();
                 system("cls");
             }break;
 
